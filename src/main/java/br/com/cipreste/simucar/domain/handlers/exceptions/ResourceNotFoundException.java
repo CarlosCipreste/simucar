@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class ResourceNotFoundException extends BaseHttpException{
 
-    public ResourceNotFoundException(String message) {
-        super(message, HttpStatus.NOT_FOUND);
+    public ResourceNotFoundException(String className, String message) {
+        super(className,message, HttpStatus.NOT_FOUND);
     }
     
 }

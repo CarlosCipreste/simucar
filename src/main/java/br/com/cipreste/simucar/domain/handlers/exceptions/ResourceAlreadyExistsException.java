@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class ResourceAlreadyExistsException extends BaseHttpException{
 
-    public ResourceAlreadyExistsException(String message) {
-        super(message, HttpStatus.CONFLICT);
+    public ResourceAlreadyExistsException(String className, String message) {
+        super(className,message, HttpStatus.CONFLICT);
     }
     
 }
