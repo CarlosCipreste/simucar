@@ -1,18 +1,25 @@
 package br.com.cipreste.simucar.domain.cliente;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import br.com.cipreste.simucar.domain.reserva.ReservaModel;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +35,7 @@ import lombok.Setter;
 public class ClienteModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Positive
     private Long id;
 
     @NotBlank
@@ -51,11 +59,12 @@ public class ClienteModel {
     @Pattern(regexp = "^\\(\\d{2}\\) \\d{5}-\\d{4}$", message = "Numero de celular invalido")
     private String numeroCelular;
 
+    // TODO User Relation
     // @OneToOne
     // @JoinColumn(name = "user_id")
     // private UserModel user;
 
-    // @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    // private List<ReservaModel> reservas = new ArrayList<>();
-    //TODO
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<ReservaModel> reservas = new ArrayList<>();
+    
 }

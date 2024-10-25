@@ -30,7 +30,7 @@ public class ClienteService {
         Optional<ClienteModel> clienteExists = clienteRepository.findByCpf(cliente.getCpf());
 
         if (clienteExists.isPresent()) {
-            throw new ResourceAlreadyExistsException("Cliente já existente nesse CPF.");
+            throw new ResourceAlreadyExistsException("Cliente","Cliente já existente nesse CPF.");
         }
 
         ClienteModel savedCliente = clienteRepository.save(cliente);
@@ -42,7 +42,7 @@ public class ClienteService {
         Optional<ClienteModel> clienteExists = clienteRepository.findById(cliente.getId());
 
         if (clienteExists.isEmpty())
-            throw new ResourceNotFoundException("Cliente não encontrado");
+            throw new ResourceNotFoundException("Cliente","Cliente não encontrado");
 
         // Atualiza os dados do cliente existente
         ClienteModel existingCliente = clienteExists.get();
@@ -53,13 +53,18 @@ public class ClienteService {
         existingCliente.setNumeroCelular(cliente.getNumeroCelular());
         //existingCliente.setUser(cliente.getUser()); TODO
 
-        // Salva o cliente atualizado no banco de dados
         return clienteRepository.save(existingCliente);
     }
 
     public void delete(Long id) {
         Optional<ClienteModel> clienteExists = clienteRepository.findById(id);
-        if(clienteExists.isEmpty()) throw new ResourceNotFoundException("Cliente não encontrado");
+        if(clienteExists.isEmpty()) throw new ResourceNotFoundException("Cliente","Cliente não encontrado no id especificado");
         clienteRepository.deleteById(id);
+    }
+
+    public ClienteDTO findById(Long id) {
+        Optional<ClienteModel> clienteExists = clienteRepository.findById(id);
+        if(clienteExists.isEmpty()) throw new ResourceNotFoundException("Cliente", "Cliente não encontrado no id especificado");
+        return ClienteDTO.toDTO(clienteExists.get());
     }
 }

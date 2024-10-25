@@ -25,12 +25,18 @@ public class VeiculoService {
         return veiculoDTOs;
     }
 
+    public VeiculoDTO findById(Long id ) {
+        Optional<VeiculoModel> veiculoExists = veiculoRepository.findById(id);
+        if(veiculoExists.isEmpty()) throw new ResourceNotFoundException("Veiculo", "Veiculo não encontrado no id especificado");
+        return VeiculoDTO.toDTO(veiculoExists.get());
+    }
+
     @Transactional
     public VeiculoModel save(VeiculoModel veiculoModel) {
 
         Optional<VeiculoModel> veiculoExists = veiculoRepository.findByNumPlaca(veiculoModel.getNumPlaca());
         if (veiculoExists.isPresent())
-            throw new ResourceAlreadyExistsException("Véiculo já cadastrado com esse número de placa");
+            throw new ResourceAlreadyExistsException("Veiculo","Véiculo já cadastrado com esse número de placa");
         VeiculoModel savedVeiculo = veiculoRepository.save(veiculoModel);
         return savedVeiculo;
 
@@ -41,7 +47,7 @@ public class VeiculoService {
         Optional<VeiculoModel> veiculoExists = veiculoRepository.findByNumPlaca(veiculo.numPlaca());
 
         if (veiculoExists.isEmpty())
-            throw new ResourceNotFoundException("Veiculo não encontrado pelo número da placa");
+            throw new ResourceNotFoundException("Veiculo","Veiculo não encontrado pelo número da placa");
 
         VeiculoModel existingVeiculo = veiculoExists.get();
         existingVeiculo.setMarca(veiculo.marca());
@@ -54,7 +60,7 @@ public class VeiculoService {
 
     public void delete(Long id) {
         Optional<VeiculoModel> veiculoExists = veiculoRepository.findById(id);
-        if(veiculoExists.isEmpty()) throw new ResourceNotFoundException("Veiculo não encontrado no id " + id);
+        if(veiculoExists.isEmpty()) throw new ResourceNotFoundException("Veiculo","Veiculo não encontrado no id especificado");
         veiculoRepository.deleteById(id);
     }
 
