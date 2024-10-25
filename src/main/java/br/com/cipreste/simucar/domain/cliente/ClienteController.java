@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("clientes")
 public class ClienteController {
-    
+
     @Autowired
     private ClienteService clienteService;
 
@@ -31,10 +31,17 @@ public class ClienteController {
         return ResponseEntity.ok(clientes);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ClienteDTO> findClienteById(@RequestParam @Positive Long id) {
+        ClienteDTO cliente = clienteService.findById(id);
+        return ResponseEntity.ok(cliente);
+    }
+
     @PostMapping
-    public ResponseEntity<ClienteDTO> saveCliente(@RequestBody @Valid ClienteModel cliente, UriComponentsBuilder builder) {
+    public ResponseEntity<ClienteDTO> saveCliente(@RequestBody @Valid ClienteModel cliente,
+            UriComponentsBuilder builder) {
         ClienteModel saved = clienteService.save(cliente);
-        var uri = builder.path("/clientes/{id}").buildAndExpand(saved.getId()).toUri(); 
+        var uri = builder.path("/clientes/{id}").buildAndExpand(saved.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
@@ -43,9 +50,9 @@ public class ClienteController {
         clienteService.update(cliente);
         return ResponseEntity.noContent().build();
     }
-    
-    @DeleteMapping
-    public ResponseEntity<Void> deleteCliente(@RequestParam Long id) {
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCliente(@RequestParam @Positive Long id) {
         clienteService.delete(id);
         return ResponseEntity.noContent().build();
     }
