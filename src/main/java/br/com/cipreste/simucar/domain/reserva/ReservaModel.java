@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import br.com.cipreste.simucar.domain.cliente.ClienteModel;
 import br.com.cipreste.simucar.domain.veiculo.VeiculoModel;
-import io.micrometer.common.lang.Nullable;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,10 +17,12 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "tb_reservas")
@@ -28,17 +30,28 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class ReservaModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Positive
     private Long id;
 
+    @Column(name = "veiculo_id", nullable = false)
+    @Positive
+    private Long veiculoId;
+
+    @Column(name = "cliente_id", nullable = false)
+    @Positive
+    private Long clienteId;
+
     @ManyToOne
-    @JoinColumn(name = "veiculo_id", nullable = false)
+    @JoinColumn(name = "veiculo_id", insertable = false, updatable = false)
     private VeiculoModel veiculo;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id", insertable = false, updatable = false)
     private ClienteModel cliente;
 
     @JsonProperty("data_inicio")
@@ -55,11 +68,9 @@ public class ReservaModel {
     private LocalDateTime dataFim;
 
     @JsonProperty("carro_devolvido")
-    @Nullable
     private boolean carroDevolvido = false;
 
     @JsonProperty("reserva_ativa")
-    @Nullable
     private boolean reservaAtiva = true;
 
     @AssertTrue(message = "A data de fim deve ser posterior à data de início")
@@ -74,4 +85,16 @@ public class ReservaModel {
             throw new IllegalStateException("Não é possível modificar a reserva ativa após o carro ter sido pego.");
         }
     }
+
+    public ReservaModel(ReservaSaveDTO reserva) {
+        this.clienteId = reserva.clienteId();
+        this.veiculoId = reserva.veiculoId();
+        this.dataInicio = reserva.dataInicio();
+        this.dataFim = reserva.dataFim();
+    }
+
+    public static ReservaModel toModel(ReservaSaveDTO reserva) {
+        return new ReservaModel(reserva);
+    }
 }
+
