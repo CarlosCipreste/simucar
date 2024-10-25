@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 
 @RestController
 @RequestMapping("veiculos")
@@ -26,6 +27,11 @@ public class VeiculoController {
     @GetMapping
     public ResponseEntity<List<VeiculoDTO>> findAllVeiculos() {
         return ResponseEntity.ok().body(veiculoService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<VeiculoDTO> findVeiculoById(@RequestParam @Positive Long id){
+        return ResponseEntity.ok(veiculoService.findById(id));
     }
 
     @PostMapping
@@ -42,7 +48,7 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVeiculo(@RequestParam Long id) {
+    public ResponseEntity<Void> deleteVeiculo(@RequestParam @Positive Long id) {
         veiculoService.delete(id);
         return ResponseEntity.noContent().build();
     }
