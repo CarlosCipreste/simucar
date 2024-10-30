@@ -8,13 +8,16 @@ import org.hibernate.validator.constraints.br.CPF;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import br.com.cipreste.simucar.domain.reserva.ReservaModel;
+import br.com.cipreste.simucar.domain.user.UserModel;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -59,10 +62,9 @@ public class ClienteModel {
     @Pattern(regexp = "^\\(\\d{2}\\) \\d{5}-\\d{4}$", message = "Numero de celular invalido")
     private String numeroCelular;
 
-    // TODO User Relation
-    // @OneToOne
-    // @JoinColumn(name = "user_id")
-    // private UserModel user;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserModel user;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<ReservaModel> reservas = new ArrayList<>();
