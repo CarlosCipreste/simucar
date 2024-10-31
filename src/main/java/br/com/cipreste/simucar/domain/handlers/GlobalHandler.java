@@ -37,6 +37,7 @@ public class GlobalHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse errorResponse = new ErrorResponse(
+                ex.getClass().toString(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Ocorreu um erro inesperado.",
                 System.currentTimeMillis());
