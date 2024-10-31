@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import br.com.cipreste.simucar.domain.authentication.RegisterDTO;
 import br.com.cipreste.simucar.domain.reserva.ReservaModel;
 import br.com.cipreste.simucar.domain.user.UserModel;
 import jakarta.persistence.CascadeType;
@@ -38,7 +39,6 @@ import lombok.Setter;
 public class ClienteModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Positive
     private Long id;
 
     @NotBlank
@@ -62,11 +62,20 @@ public class ClienteModel {
     @Pattern(regexp = "^\\(\\d{2}\\) \\d{5}-\\d{4}$", message = "Numero de celular invalido")
     private String numeroCelular;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserModel user;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     private List<ReservaModel> reservas = new ArrayList<>();
-    
+
+    public ClienteModel(RegisterDTO registerDTO, UserModel user) {
+        this.nome = registerDTO.getNome();
+        this.sobrenome = registerDTO.getSobrenome();
+        this.cpf = registerDTO.getCpf();
+        this.email = registerDTO.getEmail();
+        this.numeroCelular = registerDTO.getNumeroCelular();
+        this.user = user;
+    }
+
 }
