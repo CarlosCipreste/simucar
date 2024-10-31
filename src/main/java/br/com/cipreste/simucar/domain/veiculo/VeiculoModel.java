@@ -36,7 +36,6 @@ public class VeiculoModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Positive
     private Long id;
 
     @NotBlank

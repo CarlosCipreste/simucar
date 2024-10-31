@@ -31,7 +31,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserModel implements UserDetails{
+public class UserModel implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,27 +39,25 @@ public class UserModel implements UserDetails{
 
     @NotBlank
     private String login;
-    
+
     @NotBlank
     private String password;
 
-    @NotNull
-    @OneToOne
-    @JoinColumn(name = "cliente_id")
-    private ClienteModel cliente;
-    
     @Enumerated(EnumType.STRING)
     @NotNull
     private UserRole role;
 
+    // Implementação de UserDetails omitida para simplificação
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        if (this.role == UserRole.ADMIN)
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        else
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
+
     @Override
     public String getUsername() {
         return login;
     }
-    
 }
