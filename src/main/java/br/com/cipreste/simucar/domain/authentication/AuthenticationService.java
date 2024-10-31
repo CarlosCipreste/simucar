@@ -1,6 +1,10 @@
 package br.com.cipreste.simucar.domain.authentication;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.cipreste.simucar.domain.cliente.ClienteModel;
@@ -8,6 +12,7 @@ import br.com.cipreste.simucar.domain.cliente.ClienteRepository;
 import br.com.cipreste.simucar.domain.enums.UserRole;
 import br.com.cipreste.simucar.domain.user.UserModel;
 import br.com.cipreste.simucar.domain.user.UserRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
@@ -19,25 +24,25 @@ public class AuthenticationService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Transactional
     public ClienteModel saveNewUserandCliente(RegisterDTO registerDTO) {
-        // Criação do UserModel
+        
+        Optional<UserDetails> userExists = userRepository.findByLogin(registerDTO.getLogin());
+        if (userExists.isPresent()) throw new RuntimeException("Login já existe!");
+        
         UserModel user = new UserModel();
-        user.setLogin(registerDTO.login());
-        user.setPassword(registerDTO.password()); // Use uma codificação segura para a senha, como BCrypt
-        user.setRole(UserRole.USER); // Role padrão, ajuste conforme necessário
+        user.setLogin(registerDTO.getLogin());
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setRole(UserRole.USER);
 
-        // Criação do ClienteModel
-        ClienteModel cliente = new ClienteModel();
-        cliente.setNome(registerDTO.nome());
-        cliente.setSobrenome(registerDTO.sobrenome());
-        cliente.setCpf(registerDTO.cpf());
-        cliente.setEmail(registerDTO.email());
-        cliente.setNumeroCelular(registerDTO.numeroCelular());
-        cliente.setUser(user); // Relaciona o cliente ao usuário
+        user = userRepository.save(user);
 
-        // Salva primeiro o cliente, e depois o usuário associado
-        user.setCliente(cliente);
-        return clienteRepository.save(cliente); // Salva o cliente e o usuário devido à cascata
+        ClienteModel cliente = new ClienteModel(registerDTO, user);
+
+        return clienteRepository.save(cliente);
     }
 
     public void authorizeUser(@Valid AuthenticationDTO authDTO) {
