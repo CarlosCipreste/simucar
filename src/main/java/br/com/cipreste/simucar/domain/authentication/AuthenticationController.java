@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.cipreste.simucar.domain.cliente.ClienteModel;
-
 import jakarta.validation.Valid;
 
 @RestController
@@ -23,14 +22,14 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authorizeUser(@RequestBody @Valid AuthenticationDTO authDTO) {
-        authenticationService.authorizeUser(authDTO);
-        return ResponseEntity.ok().build();
-    }
 
+        String token =authenticationService.authorizeUser(authDTO);
+        return ResponseEntity.ok().body(token);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDTO registerDTO, UriComponentsBuilder builder) {
-        ClienteModel savedUser = authenticationService.saveNewUserandCliente(registerDTO);
+        ClienteModel savedUser = authenticationService.saveNewUser(registerDTO);
         URI uri = builder.path("/register/{id}").buildAndExpand(savedUser.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
